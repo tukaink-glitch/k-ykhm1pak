@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>横浜聖地巡礼アプリ</title>
+
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+  font-family:sans-serif;
+  background:linear-gradient(to bottom,#f4ede5,#dce7ef);
+  color:#352821;
+}
+*{box-sizing:border-box;}
+.app{
+  width:100%;
+  max-width:390px;
+  min-height:100vh;
+  margin:0 auto;
+  padding:16px 14px 90px;
+  overflow-x:hidden;
+}
+.card{
+  width:100%;
+  max-width:100%;
+  background:rgba(255,255,255,0.94);
+  border-radius:24px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.08);
+  overflow:hidden;
+}
+h1{margin:0 0 8px;font-size:26px;line-height:1.3;}
+h2{margin:0 0 14px;font-size:20px;}
+h3{color:#4b6e85;margin:16px 0 10px;}
+.small{font-size:14px;color:#666;}
+.tag{
+  display:inline-block;
+  background:#79a6c4;
+  color:white;
+  border-radius:999px;
+  padding:6px 12px;
+  font-size:12px;
+  margin:8px 0 12px;
+}
+.progress-wrap{
+  width:100%;
+  height:22px;
+  background:#ddd;
+  border-radius:999px;
+  overflow:hidden;
+  margin:12px 0;
+}
+.progress{
+  height:100%;
+  width:0%;
+  background:linear-gradient(to right,#8e7560,#79a6c4);
+  transition:0.3s;
+}
+.task,.line{
+  width:100%;
+  max-width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  background:#fffdfb;
+  border:1px solid #dde4ea;
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:10px;
+}
+.task span,.line span{flex:1;min-width:0;}
+input,textarea,button{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  border-radius:14px;
+  font-size:16px;
+}
+input,textarea{
+  border:1px solid #ddd;
+  padding:14px;
+  background:#fffdfb;
+}
+input[type="checkbox"]{
+  width:22px;
+  height:22px;
+  flex:0 0 auto;
+}
+textarea{min-height:110px;}
+button{
+  border:none;
+  padding:14px;
+  background:#79a6c4;
+  color:white;
+  font-weight:bold;
+}
+.row{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:10px;
+}
+.screen{display:none;}
+.screen.active{display:block;}
+.tabs{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:390px;
+  background:rgba(255,255,255,0.96);
+  border-top:1px solid #d9e3ea;
+  display:flex;
+  justify-content:space-around;
+  padding:8px 6px;
+  box-shadow:0 -3px 12px rgba(0,0,0,0.08);
+}
+.tab{
+  background:transparent;
+  color:#496173;
+  font-size:12px;
+  padding:8px 4px;
+  border-radius:14px;
+}
+.tab.active{
+  background:#79a6c4;
+  color:white;
+}
+.memo{
+  background:#f7fbfe;
+  border:1px solid #dde8ef;
+  border-radius:16px;
+  padding:12px;
+  font-size:14px;
+}
+.danger{background:#b66b6b;}
+</style>
+</head>
+
+<body>
+<main class="app">
+
+<section id="home" class="screen active">
+  <div class="card">
+    <h1>横浜<br>聖地巡礼アプリ</h1>
+    <div class="tag">文豪・文スト・遠征対応</div>
+
+    <div class="small">遠征準備進捗</div>
+    <div class="progress-wrap">
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <div class="line">
+      <span id="percentText">0%</span>
+      <strong id="statusText">準備中</strong>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>基本情報</h2>
+    <div class="line"><span>宿泊先</span><strong>global cabin横浜中華街</strong></div>
+    <div class="line"><span>ホテル代</span><strong>6,412円</strong></div>
+    <div class="line"><span>目的</span><strong>横浜聖地巡礼</strong></div>
+  </div>
+</section>
+
+<section id="prep" class="screen">
+  <div class="card">
+    <h2>旅行前にやること</h2>
+
+    <h3>予約・予定確認</h3>
+    <div class="task"><span>ホテル予約メール確認</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>ホテル名・住所スクショ</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>チェックイン時間確認</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>営業時間・休館日確認</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>行きたい場所の優先順位決定</span><input type="checkbox" class="check"></div>
+
+    <h3>移動準備</h3>
+    <div class="task"><span>会社から横浜までのルート確認</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>乗換駅確認</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>終電・遅延時ルート確認</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>GoogleMapでホテル保存</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>ICカード残高確認</span><input type="checkbox" class="check"></div>
+
+    <h3>前日夜・当日朝</h3>
+    <div class="task"><span>アラームセット</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>荷物を玄関付近へ</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>財布・スマホ・鍵確認</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>飲み物用意</span><input type="checkbox" class="check"></div>
+  </div>
+</section>
+
+<section id="bag" class="screen">
+  <div class="card">
+    <h2>持ち物チェック</h2>
+
+    <h3>必須</h3>
+    <div class="task"><span>財布</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>スマホ</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>充電器</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>モバイルバッテリー</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>イヤホン</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>身分証</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>薬</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>ハンカチ・ティッシュ</span><input type="checkbox" class="check"></div>
+
+    <h3>泊まり</h3>
+    <div class="task"><span>着替え</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>下着・靴下</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>メイク用品</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>コンタクト用品</span><input type="checkbox" class="check"></div>
+
+    <h3>オタ活</h3>
+    <div class="task"><span>痛バッグ</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>アクスタ</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>撮影小物</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>グッズ保護ケース</span><input type="checkbox" class="check"></div>
+  </div>
+</section>
+
+<section id="route" class="screen">
+  <div class="card">
+    <h2>聖地巡礼リスト</h2>
+    <div class="task"><span>神奈川近代文学館</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>中華街</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>山下公園</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>赤レンガ倉庫</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>港の見える丘公園</span><input type="checkbox" class="check"></div>
+    <div class="task"><span>横浜駅周辺ショップ</span><input type="checkbox" class="check"></div>
+  </div>
+
+  <div class="card">
+    <h2>当日スケジュール</h2>
+    <div class="row"><input type="time" class="save"><input type="text" class="save" placeholder="会社出発"></div>
+    <div class="row"><input type="time" class="save"><input type="text" class="save" placeholder="横浜到着"></div>
+    <div class="row"><input type="time" class="save"><input type="text" class="save" placeholder="チェックイン"></div>
+    <div class="row"><input type="time" class="save"><input type="text" class="save" placeholder="夕飯・買い物"></div>
+    <textarea class="save" placeholder="移動メモ・乗換・注意点"></textarea>
+  </div>
+</section>
+
+<section id="note" class="screen">
+  <div class="card">
+    <h2>予算</h2>
+    <div class="line"><span>ホテル</span><strong>6,412円</strong></div>
+    <div class="row">
+      <input type="text" class="save" placeholder="交通費">
+      <input type="text" class="save" placeholder="ご飯代">
+      <input type="text" class="save" placeholder="グッズ代">
+      <input type="text" class="save" placeholder="予備費">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>緊急用メモ</h2>
+    <textarea class="save" placeholder="しんどくなった時の避難場所、ネカフェ、タクシー予算など"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>写真撮影メモ</h2>
+    <textarea class="save" placeholder="撮りたい構図、持っていくアクスタ、撮影スポットなど"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>次回旅行に活かす</h2>
+    <div class="memo">
+      ✔ 荷物は多すぎた？<br><br>
+      ✔ 何時出発が楽だった？<br><br>
+      ✔ どこで疲れた？<br><br>
+      ✔ 宿の立地はどうだった？<br><br>
+      ✔ 予算は足りた？
+    </div>
+    <br>
+    <textarea class="save" placeholder="次回への改善メモ"></textarea>
+  </div>
+
+  <button class="danger" onclick="resetAll()">全部リセット</button>
+</section>
+
+</main>
+
+<nav class="tabs">
+  <button class="tab active" onclick="showScreen('home',this)">🏠<br>ホーム</button>
+  <button class="tab" onclick="showScreen('prep',this)">✅<br>準備</button>
+  <button class="tab" onclick="showScreen('bag',this)">🎒<br>荷物</button>
+  <button class="tab" onclick="showScreen('route',this)">🗺<br>巡礼</button>
+  <button class="tab" onclick="showScreen('note',this)">📝<br>メモ</button>
+</nav>
+
+<script>
+const checks = document.querySelectorAll('.check');
+const saves = document.querySelectorAll('.save');
+
+function showScreen(id,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  updateProgress();
+}
+
+function updateProgress(){
+  let checked = 0;
+  checks.forEach(c=>{ if(c.checked) checked++; });
+
+  const percent = Math.floor((checked / checks.length) * 100);
+
+  document.getElementById('progress').style.width = percent + '%';
+  document.getElementById('percentText').innerText = percent + '%';
+
+  let status = '準備中';
+  if(percent >= 25) status = '遠征準備開始';
+  if(percent >= 50) status = 'かなり進んでる';
+  if(percent >= 75) status = '出発可能';
+  if(percent >= 100) status = '完全準備完了';
+
+  document.getElementById('statusText').innerText = status;
+  saveData();
+}
+
+function saveData(){
+  localStorage.setItem('yokohamaTripChecks',JSON.stringify([...checks].map(c=>c.checked)));
+  localStorage.setItem('yokohamaTripInputs',JSON.stringify([...saves].map(i=>i.value)));
+}
+
+function loadData(){
+  const savedChecks = JSON.parse(localStorage.getItem('yokohamaTripChecks'));
+  if(savedChecks){ checks.forEach((c,i)=>c.checked=savedChecks[i]); }
+
+  const savedInputs = JSON.parse(localStorage.getItem('yokohamaTripInputs'));
+  if(savedInputs){ saves.forEach((i,n)=>i.value=savedInputs[n] || i.value); }
+
+  updateProgress();
+}
+
+function resetAll(){
+  if(confirm('全部リセットする？')){
+    localStorage.removeItem('yokohamaTripChecks');
+    localStorage.removeItem('yokohamaTripInputs');
+    location.reload();
+  }
+}
+
+checks.forEach(c=>c.addEventListener('change',updateProgress));
+saves.forEach(i=>i.addEventListener('input',saveData));
+
+loadData();
+</script>
+
+</body>
+</html>
