@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旅行貯金アプリ</title>
+
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+  font-family:sans-serif;
+  background:linear-gradient(to bottom,#f4ede5,#dce7ef);
+  color:#352821;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+.app{
+  width:100%;
+  max-width:390px;
+  min-height:100vh;
+  margin:0 auto;
+  padding:16px 14px 90px;
+  overflow-x:hidden;
+}
+
+.card{
+  width:100%;
+  max-width:100%;
+  background:rgba(255,255,255,0.94);
+  border-radius:24px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.08);
+  overflow:hidden;
+}
+
+h1{
+  margin:0 0 8px;
+  font-size:26px;
+  line-height:1.3;
+}
+
+h2{
+  margin:0 0 14px;
+  font-size:20px;
+}
+
+.small{
+  font-size:14px;
+  color:#666;
+}
+
+.tag{
+  display:inline-block;
+  background:#79a6c4;
+  color:white;
+  border-radius:999px;
+  padding:6px 12px;
+  font-size:12px;
+  margin:8px 0 12px;
+}
+
+.progress-wrap{
+  width:100%;
+  height:22px;
+  background:#ddd;
+  border-radius:999px;
+  overflow:hidden;
+  margin:12px 0;
+}
+
+.progress{
+  height:100%;
+  width:0%;
+  background:linear-gradient(to right,#8e7560,#79a6c4);
+  transition:0.3s;
+}
+
+.row{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  width:100%;
+  max-width:100%;
+  margin-bottom:10px;
+}
+
+.line{
+  width:100%;
+  max-width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  background:#fffdfb;
+  border:1px solid #dde4ea;
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:10px;
+}
+
+.line span{
+  flex:1;
+  min-width:0;
+}
+
+input,textarea,button{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  border-radius:14px;
+  font-size:16px;
+}
+
+input,textarea{
+  border:1px solid #ddd;
+  padding:14px;
+  background:#fffdfb;
+}
+
+textarea{
+  min-height:110px;
+}
+
+button{
+  border:none;
+  padding:14px;
+  background:#79a6c4;
+  color:white;
+  font-weight:bold;
+}
+
+.button-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.button-row button{
+  flex:1;
+  min-width:90px;
+}
+
+.log{
+  background:#f7fbfe;
+  border:1px solid #dde8ef;
+  border-radius:16px;
+  padding:12px;
+  margin-bottom:10px;
+  font-size:14px;
+  overflow-wrap:anywhere;
+}
+
+.plus{
+  color:#3d7d58;
+  font-weight:bold;
+}
+
+.minus{
+  color:#a45b5b;
+  font-weight:bold;
+}
+
+.screen{
+  display:none;
+}
+
+.screen.active{
+  display:block;
+}
+
+.tabs{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:390px;
+  background:rgba(255,255,255,0.96);
+  border-top:1px solid #d9e3ea;
+  display:flex;
+  justify-content:space-around;
+  padding:8px 6px;
+  box-shadow:0 -3px 12px rgba(0,0,0,0.08);
+}
+
+.tab{
+  background:transparent;
+  color:#496173;
+  font-size:12px;
+  padding:8px 4px;
+  border-radius:14px;
+}
+
+.tab.active{
+  background:#79a6c4;
+  color:white;
+}
+
+.danger{
+  background:#b66b6b;
+}
+</style>
+</head>
+
+<body>
+<main class="app">
+
+<section id="home" class="screen active">
+  <div class="card">
+    <h1>旅行貯金アプリ</h1>
+
+    <div class="tag">
+      横浜＆御殿場 / 太宰カラー
+    </div>
+
+    <div class="small">現在残高</div>
+
+    <h1 id="balanceText">0円</h1>
+
+    <div class="progress-wrap">
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <div class="line">
+      <span id="percentText">0%</span>
+      <strong id="remainText">残り 60,000円</strong>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>目標</h2>
+
+    <div class="line"><span>最終目標</span><strong>60,000円</strong></div>
+    <div class="line"><span>横浜予算</span><strong>15,000円</strong></div>
+    <div class="line"><span>横浜ホテル</span><strong>6,412円</strong></div>
+    <div class="line"><span>御殿場予算</span><strong>40,000円</strong></div>
+    <div class="line"><span>予備</span><strong>5,000円</strong></div>
+  </div>
+</section>
+
+<section id="add" class="screen">
+  <div class="card">
+    <h2>入金する</h2>
+
+    <div class="row">
+      <input type="number" id="incomeAmount" placeholder="入金額">
+      <input type="text" id="incomeMemo" placeholder="理由">
+    </div>
+
+    <div class="button-row">
+      <button onclick="quickIncome(1000)">+1000</button>
+      <button onclick="quickIncome(3000)">+3000</button>
+      <button onclick="quickIncome(5000)">+5000</button>
+    </div>
+
+    <button onclick="addTransaction('income')">
+      入金を記録
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>支出する</h2>
+
+    <div class="row">
+      <input type="number" id="expenseAmount" placeholder="支出額">
+      <input type="text" id="expenseMemo" placeholder="理由">
+    </div>
+
+    <button onclick="addTransaction('expense')">
+      支出を記録
+    </button>
+  </div>
+</section>
+
+<section id="history" class="screen">
+  <div class="card">
+    <h2>過去ログ</h2>
+    <div id="logList"></div>
+  </div>
+</section>
+
+<section id="summary" class="screen">
+  <div class="card">
+    <h2>残高履歴</h2>
+    <div id="balanceHistory"></div>
+  </div>
+
+  <div class="card">
+    <h2>メモ</h2>
+
+    <textarea id="freeMemo" placeholder="自由メモ"></textarea>
+  </div>
+
+  <div class="card">
+    <button class="danger" onclick="resetAll()">
+      全データ削除
+    </button>
+  </div>
+</section>
+
+</main>
+
+<nav class="tabs">
+  <button class="tab active"
+    onclick="showScreen('home',this)">
+    🏠<br>ホーム
+  </button>
+
+  <button class="tab"
+    onclick="showScreen('add',this)">
+    ＋<br>記録
+  </button>
+
+  <button class="tab"
+    onclick="showScreen('history',this)">
+    📜<br>ログ
+  </button>
+
+  <button class="tab"
+    onclick="showScreen('summary',this)">
+    📊<br>履歴
+  </button>
+</nav>
+
+<script>
+const goal = 60000;
+
+let db;
+let balance = 0;
+
+const request = indexedDB.open('TravelSavingAppDB',1);
+
+request.onupgradeneeded = function(event){
+  db = event.target.result;
+
+  if(!db.objectStoreNames.contains('transactions')){
+    db.createObjectStore('transactions',{
+      keyPath:'id',
+      autoIncrement:true
+    });
+  }
+};
+
+request.onsuccess = function(event){
+  db = event.target.result;
+  loadAll();
+};
+
+function showScreen(id,btn){
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.remove('active');
+  });
+
+  document.getElementById(id).classList.add('active');
+
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.remove('active');
+  });
+
+  btn.classList.add('active');
+
+  loadAll();
+}
+
+function todayText(){
+  const d = new Date();
+
+  return d.getFullYear() + '/' +
+    String(d.getMonth()+1).padStart(2,'0') + '/' +
+    String(d.getDate()).padStart(2,'0');
+}
+
+function addTransaction(type){
+  if(!db){
+    alert('保存準備中');
+    return;
+  }
+
+  let amountInput;
+  let memoInput;
+
+  if(type === 'income'){
+    amountInput = document.getElementById('incomeAmount');
+    memoInput = document.getElementById('incomeMemo');
+  }else{
+    amountInput = document.getElementById('expenseAmount');
+    memoInput = document.getElementById('expenseMemo');
+  }
+
+  const amount = Number(amountInput.value);
+
+  if(!amount || amount <= 0){
+    alert('金額を入れてね');
+    return;
+  }
+
+  const data = {
+    type:type,
+    amount:amount,
+    memo:memoInput.value || '',
+    date:todayText(),
+    createdAt:Date.now()
+  };
+
+  const tx = db.transaction(['transactions'],'readwrite');
+
+  tx.objectStore('transactions').add(data);
+
+  tx.oncomplete = function(){
+    amountInput.value = '';
+    memoInput.value = '';
+    loadAll();
+  };
+}
+
+function quickIncome(amount){
+  document.getElementById('incomeAmount').value = amount;
+}
+
+function loadAll(){
+  if(!db) return;
+
+  const tx = db.transaction(['transactions'],'readonly');
+  const store = tx.objectStore('transactions');
+  const req = store.getAll();
+
+  req.onsuccess = function(){
+    const items =
+      req.result.sort((a,b)=>a.createdAt-b.createdAt);
+
+    balance = 0;
+
+    const logList =
+      document.getElementById('logList');
+
+    const balanceHistory =
+      document.getElementById('balanceHistory');
+
+    logList.innerHTML = '';
+    balanceHistory.innerHTML = '';
+
+    items.forEach(item=>{
+
+      if(item.type === 'income'){
+        balance += item.amount;
+      }else{
+        balance -= item.amount;
+      }
+
+      const log = document.createElement('div');
+      log.className = 'log';
+
+      const sign =
+        item.type === 'income' ? '+' : '-';
+
+      const cls =
+        item.type === 'income' ? 'plus' : 'minus';
+
+      const label =
+        item.type === 'income' ? '入金' : '支出';
+
+      log.innerHTML =
+        `<strong>${item.date}</strong><br>
+        ${label}：
+        <span class="${cls}">
+        ${sign}${item.amount.toLocaleString()}円
+        </span><br>
+        ${item.memo || 'メモなし'}`;
+
+      logList.prepend(log);
+
+      const history = document.createElement('div');
+      history.className = 'log';
+
+      history.innerHTML =
+        `<strong>${item.date}</strong><br>
+        この時点の残高：
+        <strong>${balance.toLocaleString()}円</strong>`;
+
+      balanceHistory.prepend(history);
+    });
+
+    updateHome();
+  };
+}
+
+function updateHome(){
+
+  document.getElementById('balanceText').innerText =
+    balance.toLocaleString() + '円';
+
+  const percent =
+    Math.min((balance / goal) * 100,100);
+
+  document.getElementById('progress').style.width =
+    percent + '%';
+
+  document.getElementById('percentText').innerText =
+    Math.floor(percent) + '%';
+
+  document.getElementById('remainText').innerText =
+    '残り ' +
+    Math.max(goal - balance,0).toLocaleString() +
+    '円';
+}
+
+document.getElementById('freeMemo')
+.addEventListener('input',function(){
+
+  localStorage.setItem(
+    'travelSavingMemo',
+    this.value
+  );
+});
+
+const savedMemo =
+  localStorage.getItem('travelSavingMemo');
+
+if(savedMemo){
+  document.getElementById('freeMemo').value =
+    savedMemo;
+}
+
+function resetAll(){
+
+  if(confirm('本当に全データを削除する？')){
+
+    const tx =
+      db.transaction(['transactions'],'readwrite');
+
+    tx.objectStore('transactions').clear();
+
+    tx.oncomplete = function(){
+
+      localStorage.removeItem('travelSavingMemo');
+
+      location.reload();
+    };
+  }
+}
+</script>
+
+</body>
+</html>
